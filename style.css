@@ -7,16 +7,6 @@
 .hue {
 	background: linear-gradient( to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00 );
 }
-.sat {
-}
-.bri {
-}
-.red {
-}
-.green {
-}
-.blue {
-}
 
 .slider, .vslider {
 	position:relative;

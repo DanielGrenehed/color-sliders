@@ -1,0 +1,53 @@
+
+function toHex(v) {
+	let l = Math.floor(v).toString(16)
+	for (let i = l.length; i < 2; i++) {
+		l= '0'+l
+	}
+	return l;
+}
+
+function colorToString(rgb) {
+	return "#" + toHex(rgb[0]) + toHex(rgb[1]) + toHex(rgb[2]);
+}
+
+function HSVToRGB(hsv) { // Hue, Saturation, Brightness/Value
+	let h=hsv[0], s=hsv[1], v=hsv[2];
+	let r, g, b;
+	let i = Math.floor(h*6);
+	let f = h * 6 - i;
+	let p = v * (1 - s);
+	let q = v * (1 - f * s);
+	let t = v * (1 - (1 - f) * s);
+	
+	switch (i%6) {
+		case 0: r=v,g=t,b=p; break;
+		case 1: r=q,g=v,b=p; break;
+		case 2: r=p,g=v,b=t; break;
+		case 3: r=p,g=q,b=v; break;
+		case 4: r=t,g=p,b=v; break;
+		case 5: r=v,g=p,b=q; break;
+	}
+	return [r*255,g*255,b*255];
+}
+
+function RGBToHSV(rgb) {
+	let r=rgb[0]/255,g=rgb[1]/255,b=rgb[2]/255;
+	let max = Math.max(r,g,b), min = Math.min(r,g,b);
+	let h,s,v=max;
+	let d = max - min;
+	s = max == 0 ? 0 : d / max;
+	if (max == min) {
+		h = 0;
+	} else {
+		switch(max) {
+			case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+			case g: h = (b - r) / d + 2; break;
+			case b: h = (r - g) / d + 4; break;
+		}
+		h /= 6;
+	}
+	return [h,s,v];
+}
+
+export {HSVToRGB, RGBToHSV, colorToString}
