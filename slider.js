@@ -36,7 +36,8 @@ function mapSlider(slider, callback) {
 	let touch_callback = (evt) => {
 		evt.preventDefault();
 		if (evt.targetTouches.length > 0) {
-			target = evt.targetTouches[0].target;
+			let target = evt.targetTouches[0].target;
+			let pos;
 			if (vertical) {
 				pos = evt.targetTouches[0].pageY - target.getBoundingClientRect().top;
 			} else {
