@@ -7,9 +7,16 @@ function constructColorPicker(p, callback) {
 	p.hsv = [0, 1, 0];
 	p.rgb = HSVToRGB(p.hsv);
 
+	let hsv_container = document.createElement("div");
+	hsv_container.classList.add("grid-column");
+	let rgb_container = document.createElement("div");
+	rgb_container.classList.add("grid-column");
+
+	
 	p.updateValues = () => {};
 	let sliders = {};
-	sliders.hue = createSlider(p, "Hue", 360, (v) => {
+
+	sliders.hue = createSlider(hsv_container, "Hue", 360, (v) => {
 		p.hsv[0] = v;
 		p.rgb = HSVToRGB(p.hsv);
 		let c = p.color;
@@ -20,7 +27,7 @@ function constructColorPicker(p, callback) {
 	});
 	sliders.hue.classList.add("hue");
 
-	sliders.sat = createSlider(p, "Saturation", 100, (v) => {
+	sliders.sat = createSlider(hsv_container, "Saturation", 100, (v) => {
 		p.hsv[1] = v;
 		p.rgb = HSVToRGB(p.hsv);
 		let c = p.color;
@@ -29,7 +36,7 @@ function constructColorPicker(p, callback) {
 			callback(p.color);
 		}
 	});
-	sliders.bri = createSlider(p, "Brightness", 100, (v) => {
+	sliders.bri = createSlider(hsv_container, "Brightness", 100, (v) => {
 		p.hsv[2] = v;
 		p.rgb = HSVToRGB(p.hsv);
 		let c = p.color;
@@ -38,7 +45,7 @@ function constructColorPicker(p, callback) {
 			callback(p.color);
 		}
 	});
-	sliders.red = createSlider(p, "Red", 255, (v) => {
+	sliders.red = createSlider(rgb_container, "Red", 255, (v) => {
 		p.rgb[0] = v*255;
 		p.hsv = RGBToHSV(p.rgb);
 		let c = p.color;
@@ -47,7 +54,7 @@ function constructColorPicker(p, callback) {
 			callback(p.color);
 		}
 	});
-	sliders.green = createSlider(p, "Green", 255, (v) => {
+	sliders.green = createSlider(rgb_container, "Green", 255, (v) => {
 		p.rgb[1] = v*255;
 		p.hsv = RGBToHSV(p.rgb);
 		let c = p.color;
@@ -56,7 +63,7 @@ function constructColorPicker(p, callback) {
 			callback(p.color);
 		}
 	});
-	sliders.blue = createSlider(p, "Blue", 255, (v) => {
+	sliders.blue = createSlider(rgb_container, "Blue", 255, (v) => {
 		p.rgb[2] = v*255;
 		p.hsv = RGBToHSV(p.rgb);
 		let c = p.color;
@@ -66,6 +73,9 @@ function constructColorPicker(p, callback) {
 		}
 	});
 	
+	p.appendChild(hsv_container);
+	p.appendChild(rgb_container);
+
 	p.updateValues = () => {
 		p.color = colorToString(p.rgb);
 		preview.style.background = p.color;
