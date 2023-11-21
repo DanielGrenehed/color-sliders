@@ -21,7 +21,7 @@ function createLabel(p, text, classes=[]) {
 	container.classList.add("labeled");
 	addClasses(container, classes);
 
-	let label = document.createElement("p");
+	let label = document.createElement("div");
 	label.classList.add("label");
 	label.innerHTML = text;
 

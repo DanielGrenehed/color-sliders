@@ -1,4 +1,4 @@
-import {mapSlider} from './slider.js';
+import {createSlider} from './slider.js';
 import {createChild, createLabel} from './element_util.js';
 import {HSVToRGB, RGBToHSV, colorToString, stringToColor} from './color_util.js';
 
@@ -9,7 +9,7 @@ function constructColorPicker(p, callback) {
 
 	p.updateValues = () => {};
 	let sliders = {};
-	sliders.hue = mapSlider(createChild(createLabel(p, "Hue", ["a"]), ["hue","slider"]), (v) => {
+	sliders.hue = createSlider(p, "Hue", 360, (v) => {
 		p.hsv[0] = v;
 		p.rgb = HSVToRGB(p.hsv);
 		let c = p.color;
@@ -18,7 +18,9 @@ function constructColorPicker(p, callback) {
 			callback(p.color);
 		}
 	});
-	sliders.sat = mapSlider(createChild(createLabel(p, "Saturation", ["c"]), ["sat","slider"]), (v) => {
+	sliders.hue.classList.add("hue");
+
+	sliders.sat = createSlider(p, "Saturation", 100, (v) => {
 		p.hsv[1] = v;
 		p.rgb = HSVToRGB(p.hsv);
 		let c = p.color;
@@ -27,7 +29,7 @@ function constructColorPicker(p, callback) {
 			callback(p.color);
 		}
 	});
-	sliders.bri = mapSlider(createChild(createLabel(p, "Brightness", ["e"]), ["bri","slider"]), (v) => {
+	sliders.bri = createSlider(p, "Brightness", 100, (v) => {
 		p.hsv[2] = v;
 		p.rgb = HSVToRGB(p.hsv);
 		let c = p.color;
@@ -36,7 +38,7 @@ function constructColorPicker(p, callback) {
 			callback(p.color);
 		}
 	});
-	sliders.red = mapSlider(createChild(createLabel(p, "Red", ["b"]), ["red","slider"]), (v) => {
+	sliders.red = createSlider(p, "Red", 255, (v) => {
 		p.rgb[0] = v*255;
 		p.hsv = RGBToHSV(p.rgb);
 		let c = p.color;
@@ -45,7 +47,7 @@ function constructColorPicker(p, callback) {
 			callback(p.color);
 		}
 	});
-	sliders.green = mapSlider(createChild(createLabel(p, "Green", ["d"]), ["green","slider"]), (v) => {
+	sliders.green = createSlider(p, "Green", 255, (v) => {
 		p.rgb[1] = v*255;
 		p.hsv = RGBToHSV(p.rgb);
 		let c = p.color;
@@ -54,7 +56,7 @@ function constructColorPicker(p, callback) {
 			callback(p.color);
 		}
 	});
-	sliders.blue = mapSlider(createChild(createLabel(p, "Blue", ["f"]), ["blue","slider"]), (v) => {
+	sliders.blue = createSlider(p, "Blue", 255, (v) => {
 		p.rgb[2] = v*255;
 		p.hsv = RGBToHSV(p.rgb);
 		let c = p.color;
@@ -67,7 +69,7 @@ function constructColorPicker(p, callback) {
 	p.updateValues = () => {
 		p.color = colorToString(p.rgb);
 		preview.style.background = p.color;
-		p.style.borderColor = p.color;
+		p.style.outlineColor = p.color;
 		
 		sliders.hue.setValue(p.hsv[0]);
 
