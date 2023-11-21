@@ -11,6 +11,12 @@ function colorToString(rgb) {
 	return "#" + toHex(rgb[0]) + toHex(rgb[1]) + toHex(rgb[2]);
 }
 
+function stringToColor(hex) {
+	if (typeof(hex) != "string") return null;
+	if (!hex.match("#[A-Fa-f0-9]{6}")) return null;
+	return [parseInt(hex.substring(1,3), 16), parseInt(hex.substring(3,5), 16), parseInt(hex.substring(5,7), 16)]
+}
+
 function HSVToRGB(hsv) { // Hue, Saturation, Brightness/Value
 	let h=hsv[0], s=hsv[1], v=hsv[2];
 	let r, g, b;
@@ -50,4 +56,4 @@ function RGBToHSV(rgb) {
 	return [h,s,v];
 }
 
-export {HSVToRGB, RGBToHSV, colorToString}
+export {HSVToRGB, RGBToHSV, colorToString, stringToColor}

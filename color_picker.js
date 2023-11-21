@@ -1,6 +1,6 @@
 import {mapSlider} from './slider.js';
 import {createChild, createLabel} from './element_util.js';
-import {HSVToRGB, RGBToHSV, colorToString} from './color_util.js';
+import {HSVToRGB, RGBToHSV, colorToString, stringToColor} from './color_util.js';
 
 function constructColorPicker(p, callback) {
 	let preview;
@@ -96,9 +96,20 @@ function constructColorPicker(p, callback) {
 		let b2 = colorToString([p.rgb[0],p.rgb[1],255]);
 		sliders.blue.style.background = "linear-gradient(to right,"+b1+","+b2+")";
 	}
-
+	
+	p.setColor = (clr) => {
+		let rgb = stringToColor(clr);
+		if (rgb == null) {
+			console.log("clr not hex string");
+			return;
+		}
+		p.rgb = rgb;
+		p.hsv = RGBToHSV(p.rgb);
+		p.updateValues();
+	}
 	preview = createChild(p, "color-preview");
 	p.updateValues();
+	return p;
 }
 
 export {constructColorPicker}; 
