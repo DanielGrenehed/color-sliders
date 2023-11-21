@@ -1,10 +1,12 @@
 console.log("hello world");
 
 let output = document.getElementById("logout");
+
 function log(str) {
 	console.log(str);
 	output.innerHTML = str;
 }
+
 let color_preview_items = document.getElementsByClassName("color-preview");
 
 function toHex(v) {
@@ -158,7 +160,7 @@ function mapSlider(slider, callback) {
 	return slider;
 }
 
-function constructColorPicker(p) {
+function constructColorPicker(p, callback) {
 	let preview;
 	p.hsv = [0, 1, 0];
 	p.rgb = HSVToRGB(p.hsv);
@@ -169,6 +171,7 @@ function constructColorPicker(p) {
 		p.hsv[0] = v;
 		p.rgb = HSVToRGB(p.hsv);
 		p.updateValues();
+		p.callback()
 	});
 	sliders.sat = mapSlider(createChild(createLabel(p, "Saturation", ["c"]), ["sat","slider"]), (v) => {
 		p.hsv[1] = v;
@@ -198,7 +201,10 @@ function constructColorPicker(p) {
 	
 	console.log(sliders);
 	p.updateValues = () => {
-		preview.style.background = colorToString(p.rgb);
+		p.color = colorToString(p.rgb);
+		preview.style.background = p.color;
+		p.style.borderColor = p.color;
+		
 		sliders.hue.setValue(p.hsv[0]);
 
 		sliders.sat.setValue(p.hsv[1]);
@@ -234,5 +240,5 @@ function constructColorPicker(p) {
 let clr_pickers = document.getElementsByClassName("color-picker");
 
 for (let i = 0; i < clr_pickers.length; i++) {
-	constructColorPicker(clr_pickers[i]);
+	constructColorPicker(clr_pickers[i], (v) => {});
 }

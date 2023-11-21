@@ -44,6 +44,9 @@
 	gap:20px;
 	grid: "a b""c d""e f""g h";
 	grid-template-columns:240px 240px;
+	border: 2px solid black;
+	border-radius:10px;
+	width:500px;
 }
 .vertical {
 }
