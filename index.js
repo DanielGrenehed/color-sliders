@@ -52,6 +52,11 @@ function colorToString(rgb) {
 function lerp(a, b, t) {return (1.0-t)*a+b*t;}
 function invlerp(a, b, v) {return (v-a)/(b-a);}
 function remap(im, ix, om, ox, v) {return lerp(om, ox, invlerp(im, ix, v));}
+function squish(min, max, v) {
+	if (v<min) {return min;}
+	if (v>max) {return max;}
+	return v;
+}
 
 function HSVToRGB(hsv) { // Hue, Saturation, Brightness/Value
 	let h=hsv[0], s=hsv[1], v=hsv[2];
@@ -92,71 +97,66 @@ function RGBToHSV(rgb) {
 	return [h,s,v];
 }
 
-function handleSlider(evt, valueCallback) {
-	evt.preventDefault();
-	let pos =0;
-	let target;
-	if (evt instanceof MouseEvent) { 
-		if (evt.buttons == undefined || evt.buttons != 1) {
-			return;
-		}
-		target = evt.originalTarget;
-		if (evt.originalTarget == undefined) {
-			target = evt.srcElement;
-		}
-		pos = evt.layerX;
-	}
-	else if (evt instanceof TouchEvent) {
-		if (evt.targetTouches.length > 0) {
-			target = evt.targetTouches[0].target;
-			pos = evt.targetTouches[0].pageX - target.getBoundingClientRect().left;
-		}
-	}
-	else {
-		log("not mouse nor touch event!");
-	}
-	if (target == undefined) {
-		return;
-	}
+function sliderInput(target, pos, callback) {
+	if (target == undefined) {return;}
+	let vertical = target.classList.contains("vslider");
 	let pic = target.getElementsByClassName("slider-picker")[0];
-	let p_width = pic.offsetWidth;
-
-	let width = target.clientWidth - p_width;
-	pos = Math.min(width, pos);
-	pos = Math.max(0, pos);
+	let size = vertical ? target.clientHeight - pic.offsetHeight : target.clientWidth - pic.offsetWidth;
+	pos = Math.max(0, Math.min(size, pos));
 	if (pic != undefined) {
-		pic.style.left = pos + "px";
+		if (vertical) {
+			pic.style.top = pos + "px";
+		} else {
+			pic.style.left = pos + "px";
+		}
 	}
-	let val = remap(0, width, 0, 1, pos);
-	valueCallback(val);
+	let val = vertical ? remap(0,size, 1, 0, pos) : remap(0, size, 0, 1, pos);
+	callback(val);
 }
-
 
 function mapSlider(slider, callback) {
 	let picker = slider.getElementsByClassName("slider-picker");
-	if (picker.length < 1) {
-		picker = createChild(slider, "slider-picker");
-	} else {
-		picker = picker[0];
-		console.log("hello", picker);
-	}
+	picker = picker.length < 1 ? createChild(slider, "slider-picker") : picker[0];
+	let vertical = slider.classList.contains("vslider");
+	
 	slider.setValue = (v) => {
-		let width = slider.clientWidth - picker.offsetWidth;
-		if (v < 0) {
-			v = 0;
-		} else if (v > 1) {
-			v = 1;
+		let size = vertical ? slider.clientHeight - picker.offsetHeight : slider.clientWidth - picker.offsetWidth;
+		let pos = vertical ? remap(0,1,size,0,squish(0,1,v)) : remap(0,1,0,size,squish(0,1,v)); 
+		if (vertical) {
+			picker.style.top = pos + "px";
+		} else {
+			picker.style.left = pos + "px";
 		}
-		let pos = remap(0,1,0,width,v); 
-		picker.style.left = pos + "px";
 	}
-	slider.addEventListener("touchstart", (evt) => {handleSlider(evt, callback);});
-	slider.addEventListener("touchend", (evt) => {handleSlider(evt, callback);});
-	slider.addEventListener("touchcancel", (evt) => {handleSlider(evt, callback);});
-	slider.addEventListener("touchmove", (evt) => {handleSlider(evt, callback);});
-	slider.addEventListener("mousedown", (evt) => {handleSlider(evt, callback);});
-	slider.addEventListener("mousemove", (evt) => {handleSlider(evt, callback);});
-	slider.addEventListener("click", (evt) => {handleSlider(evt, callback);});
+
+	let touch_callback = (evt) => {
+		evt.preventDefault();
+		if (evt.targetTouches.length > 0) {
+			target = evt.targetTouches[0].target;
+			if (vertical) {
+				pos = evt.targetTouches[0].pageY - target.getBoundingClientRect().top;
+			} else {
+				pos = evt.targetTouches[0].pageX - target.getBoundingClientRect().left;
+			}
+			sliderInput(target, pos, callback);
+		}
+	}
+
+	let mouse_callback = (evt) => {
+		evt.preventDefault();
+		let pos, target = evt.originalTarget == undefined ? evt.srcElement : evt.originalTarget;
+		if (evt.buttons == undefined || evt.buttons != 1) {return;}
+		pos = vertical ? evt.layerY : evt.layerX;
+		sliderInput(target, pos, callback)
+	}
+
+	slider.addEventListener("touchstart", touch_callback);
+	slider.addEventListener("touchend", touch_callback);
+	slider.addEventListener("touchcancel", touch_callback);
+	slider.addEventListener("touchmove", touch_callback);
+	slider.addEventListener("mousedown", mouse_callback);
+	slider.addEventListener("mousemove", mouse_callback);
+	slider.addEventListener("click", mouse_callback);
 	return slider;
 }
 
@@ -165,41 +165,63 @@ function constructColorPicker(p, callback) {
 	p.hsv = [0, 1, 0];
 	p.rgb = HSVToRGB(p.hsv);
 
-	p.updateValues = () => {}
+	p.updateValues = () => {};
 	let sliders = {};
 	sliders.hue = mapSlider(createChild(createLabel(p, "Hue", ["a"]), ["hue","slider"]), (v) => {
 		p.hsv[0] = v;
 		p.rgb = HSVToRGB(p.hsv);
+		let c = p.color;
 		p.updateValues();
-		p.callback()
+		if (c != p.color) {
+			callback(p.color);
+		}
 	});
 	sliders.sat = mapSlider(createChild(createLabel(p, "Saturation", ["c"]), ["sat","slider"]), (v) => {
 		p.hsv[1] = v;
 		p.rgb = HSVToRGB(p.hsv);
+		let c = p.color;
 		p.updateValues();
+		if (c != p.color) {
+			callback(p.color);
+		}
 	});
 	sliders.bri = mapSlider(createChild(createLabel(p, "Brightness", ["e"]), ["bri","slider"]), (v) => {
 		p.hsv[2] = v;
 		p.rgb = HSVToRGB(p.hsv);
+		let c = p.color;
 		p.updateValues();
+		if (c != p.color) {
+			callback(p.color);
+		}
 	});
 	sliders.red = mapSlider(createChild(createLabel(p, "Red", ["b"]), ["red","slider"]), (v) => {
 		p.rgb[0] = v*255;
 		p.hsv = RGBToHSV(p.rgb);
+		let c = p.color;
 		p.updateValues();
+		if (c != p.color) {
+			callback(p.color);
+		}
 	});
 	sliders.green = mapSlider(createChild(createLabel(p, "Green", ["d"]), ["green","slider"]), (v) => {
 		p.rgb[1] = v*255;
 		p.hsv = RGBToHSV(p.rgb);
+		let c = p.color;
 		p.updateValues();
+		if (c != p.color) {
+			callback(p.color);
+		}
 	});
 	sliders.blue = mapSlider(createChild(createLabel(p, "Blue", ["f"]), ["blue","slider"]), (v) => {
 		p.rgb[2] = v*255;
 		p.hsv = RGBToHSV(p.rgb);
+		let c = p.color;
 		p.updateValues();
+		if (c != p.color) {
+			callback(p.color);
+		}
 	});
 	
-	console.log(sliders);
 	p.updateValues = () => {
 		p.color = colorToString(p.rgb);
 		preview.style.background = p.color;
@@ -240,5 +262,7 @@ function constructColorPicker(p, callback) {
 let clr_pickers = document.getElementsByClassName("color-picker");
 
 for (let i = 0; i < clr_pickers.length; i++) {
-	constructColorPicker(clr_pickers[i], (v) => {});
+	constructColorPicker(clr_pickers[i], (v) => {console.log(v);});
 }
+
+
