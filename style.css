@@ -123,8 +123,27 @@ body {
 .grid-column {
 	display:grid;
 	gap:20px;
+	padding:20px;
 	grid-auto-columns:auto;
 }
 .hidden {
 	display:none;
+}
+
+.tabbed {
+	display:grid;
+	grid:"a""b";
+}
+.tab-buttons {
+	display:flex;
+	gap:10px;
+	background:var(--darker);
+}
+.tab-button {
+	user-select:none;
+	padding:7px;
+}
+.tab-button.active {
+	color:var(--text-lite);
+	background:var(--dark);	
 }

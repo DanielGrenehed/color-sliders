@@ -1,5 +1,5 @@
 import {createSlider} from './slider.js';
-import {createChild, createLabel} from './element_util.js';
+import {createChild, createLabel, createTabbedContainer} from './element_util.js';
 import {HSVToRGB, RGBToHSV, colorToString, stringToColor} from './color_util.js';
 
 function constructColorPicker(p, callback) {
@@ -73,8 +73,10 @@ function constructColorPicker(p, callback) {
 		}
 	});
 	
-	p.appendChild(hsv_container);
-	p.appendChild(rgb_container);
+	let tab = createTabbedContainer(["HSV", "RGB"], (tab) => {p.updateValues();});
+	tab.tabs.HSV.appendChild(hsv_container);
+	tab.tabs.RGB.appendChild(rgb_container);
+	p.appendChild(tab);
 
 	p.updateValues = () => {
 		p.color = colorToString(p.rgb);
