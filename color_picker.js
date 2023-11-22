@@ -2,8 +2,11 @@ import {createSlider} from './slider.js';
 import {createChild, createLabel, createTabbedContainer} from './element_util.js';
 import {HSVToRGB, RGBToHSV, colorToString, stringToColor} from './color_util.js';
 
-function constructColorPicker(p, callback) {
+function createColorPicker(callback) {
+	let p = document.createElement("div");
+	p.classList.add("color-picker");
 	let preview;
+	let value_input;
 	p.hsv = [0, 1, 0];
 	p.rgb = HSVToRGB(p.hsv);
 
@@ -82,7 +85,7 @@ function constructColorPicker(p, callback) {
 		p.color = colorToString(p.rgb);
 		preview.style.background = p.color;
 		p.style.outlineColor = p.color;
-		
+		value_input.innerHTML = p.color;	
 		sliders.hue.setValue(p.hsv[0]);
 
 		sliders.sat.setValue(p.hsv[1]);
@@ -123,12 +126,24 @@ function constructColorPicker(p, callback) {
 	}
 	
 	let preview_container = document.createElement("div");
-	preview_container.classList.add("grid-row");
+	preview_container.classList.add("color-preview-container");
 	preview = createChild(preview_container, "color-preview");
+
+	value_input = document.createElement("div");
+	value_input.classList.add("value-input");
+	value_input.contentEditable = true;
+	value_input.addEventListener("keydown", (evt) => {
+		if (evt.keyCode === 13) {
+			evt.preventDefault();
+			p.setColor(value_input.innerHTML);
+		}
+	});
+	preview_container.appendChild(value_input);
+
 	p.appendChild(preview_container);
 
 	p.updateValues();
 	return p;
 }
 
-export {constructColorPicker}; 
+export {createColorPicker}; 

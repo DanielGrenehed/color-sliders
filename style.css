@@ -23,7 +23,11 @@ body {
 	background:var(--darker);
 	color:var(--text);
 	font-family:var(--font-def);
+	display:flex;
+	gap:20px;
+	padding:20px;
 }
+
 .slider, .vslider {
 	position:relative;
 	outline:1px solid var(--border);
@@ -79,11 +83,7 @@ body {
 }
 
 .label {
-	display:inline-block;
 	margin: 0 0 0.5rem 0;
-}
-.value-input {
-	display:inline-block;
 }
 
 [contenteditable="true"]:focus {
@@ -99,7 +99,6 @@ body {
 }
 .input-component.stacked > div {
 	text-align: center;
-	margin: 0.5rem 0 0.5rem 0;
 }
 
 .input-component > .value-input {
@@ -126,8 +125,16 @@ body {
 .grid-row {
 	display:grid;
 	gap:20px;
-	padding:0 20px 20px 20px;
+	padding:20px;
 	grid-auto-rows:auto;
+	grid:"a b";
+}
+.color-preview-container {
+	display:flex;
+	gap:20px;
+	flex-direction:row;
+	align-items:end;
+	padding: 0 20px 20px 20px;
 }
 .hidden {
 	display:none;
@@ -135,7 +142,7 @@ body {
 
 .tabbed {
 	display:grid;
-	grid:"a""b";
+	grid:"buttons""content";
 }
 .tab-buttons {
 	display:flex;
