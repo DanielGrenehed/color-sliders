@@ -65,6 +65,7 @@ function createTabbedContainer(tabs, callback) {
 		button.innerHTML = tabs[i];
 		button.classList.add("tab-button");
 		button.addEventListener("click", (evt) => {on_click(tabs[i]);});
+		button.addEventListener("touch", (evt) => {on_click(tabs[i]);});
 		button_container.appendChild(button);
 		container.buttons[tabs[i]] = button;
 	}

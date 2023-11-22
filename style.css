@@ -64,14 +64,11 @@ body {
 }
 
 .color-picker {
-	padding:20px;
 	display:grid;
-	gap:20px;
-	grid: "a b";
-	grid-template-columns:220px 220px;
+	grid: "a""b";
 	outline: 1px solid;
 	border-radius:2px;
-	width:460px;
+	width:260px;
 	background:var(--dark);
 }
 
@@ -126,6 +123,12 @@ body {
 	padding:20px;
 	grid-auto-columns:auto;
 }
+.grid-row {
+	display:grid;
+	gap:20px;
+	padding:0 20px 20px 20px;
+	grid-auto-rows:auto;
+}
 .hidden {
 	display:none;
 }
@@ -136,7 +139,6 @@ body {
 }
 .tab-buttons {
 	display:flex;
-	gap:10px;
 	background:var(--darker);
 }
 .tab-button {

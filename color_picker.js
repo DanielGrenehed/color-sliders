@@ -121,7 +121,12 @@ function constructColorPicker(p, callback) {
 		p.hsv = RGBToHSV(p.rgb);
 		p.updateValues();
 	}
-	preview = createChild(p, "color-preview");
+	
+	let preview_container = document.createElement("div");
+	preview_container.classList.add("grid-row");
+	preview = createChild(preview_container, "color-preview");
+	p.appendChild(preview_container);
+
 	p.updateValues();
 	return p;
 }
